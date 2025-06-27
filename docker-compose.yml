@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  jobs:
+    image: jobs
+    volumes:
+      - /media/Library/SPE_Automated/:/logs
+    working_dir: /app
+    entrypoint: ""

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "SPE_DAO backup started at $(date)" >> /app/logs/job.log
+
 SRC="/media/Library/SPE_DAO/"
 DEST="/media/Masters/Archives/SPE_DAO-backup"
 TODAY=$(date +%Y%m%d)
