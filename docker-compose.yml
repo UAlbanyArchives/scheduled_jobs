@@ -5,5 +5,7 @@ services:
     image: jobs
     volumes:
       - /media/Library/SPE_Automated/:/logs
+      - /media/Library/:/media/Library
+      - /media/Masters/:/media/Masters
     working_dir: /app
     entrypoint: ""

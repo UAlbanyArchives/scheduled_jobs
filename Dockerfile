@@ -8,6 +8,8 @@ RUN apt update && apt install -y rsync
 COPY . /app
 WORKDIR /app
 
-RUN chmod +x /app/SPE_DAO-backup.sh
+RUN chmod +x /app/scripts/cleanup.sh
+RUN chmod +x /app/scripts/track_disk_usage.sh
+RUN chmod +x /app/scripts/SPE_DAO-backup.sh
 
 RUN pip install -r /app/requirements.txt
