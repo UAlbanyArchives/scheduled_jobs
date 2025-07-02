@@ -1,1 +1,2 @@
 requests
+description_harvester>=0.4.2
