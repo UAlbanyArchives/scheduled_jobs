@@ -38,3 +38,6 @@ for dir in "$DEST"/backup-[0-9]*; do
     echo "Removing old backup $dir..."
     rm -rf "$dir"
 done
+
+# Log end time
+echo "SPE_DAO backup finished at $(date)" >> /app/logs/job.log
