@@ -9,6 +9,7 @@ __pycache__/
 logs/
 out_data/
 lastExport.txt
+new_online_content.json
 
 # Distribution / packaging
 .Python

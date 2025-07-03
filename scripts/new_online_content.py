@@ -23,7 +23,7 @@ collecting_area_map = {
 
 solr_core = "arclight-1.4_dao"
 #query = "https://solr2020.library.albany.edu:8984/solr/hyrax/select?q=human_readable_type_sim:Dao&sort=system_create_dtsi+desc&rows=1000"
-query = f"https://solr2020.library.albany.edu:8984/solr/{solr_core}/select?fq=has_online_content_ssim%3A%22View%20only%20online%20content%22&sort=timestamp%20desc&rows=1000"
+query = f"https://solr2020.library.albany.edu:8984/solr/{solr_core}/select?fq=has_online_content_ssim%3A%22View%20only%20online%20content%22&sort=dado_date_uploaded_ssm%20desc&rows=1000"
 print (f"\tquerying {query}")
 r = requests.get(query)
 print (f"\t--> {r.status_code}")
@@ -58,7 +58,8 @@ if r.status_code == 200:
                     else:
                         obj[key] = dao[mapping[key]]
             if "dado_date_uploaded_ssm" in dao.keys():
-                obj["added"] = datetime.strptime(dao["dado_date_uploaded_ssm"][0], "%Y-%m-%dT%H:%M:%S%z").strftime("%B %d, %Y")
+                #obj["added"] = datetime.strptime(dao["dado_date_uploaded_ssm"][0], "%Y-%m-%dT%H:%M:%S%z").strftime("%B %d, %Y")
+                obj["added"] = datetime.fromisoformat(dao["dado_date_uploaded_ssm"][0]).strftime("%B %d, %Y")
                 if obj["collecting_area"] in collecting_area_map.keys():
                     obj["collecting_area_code"] = collecting_area_map[obj["collecting_area"]];                
                 output.append(obj)
