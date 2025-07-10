@@ -9,4 +9,6 @@ services:
       - ${HOME}/.archivessnake.yml:/root/.archivessnake.yml
       - ${HOME}/.description_harvester:/root/.description_harvester
     working_dir: /app
+    environment:
+      - DESCRIPTION_HARVESTER_PLUGIN_DIR=/app/description_harvester_plugins
     entrypoint: ""

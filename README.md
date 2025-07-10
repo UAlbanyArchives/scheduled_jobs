@@ -12,7 +12,7 @@ docker build -t jobs .
 Schedule a script. `--rm` removes the Docker container after it runs.
 
 ```
-0 2 * * * docker compose run --rm job ./scripts/run_job.sh args
+0 2 * * * docker compose run --rm jobs ./scripts/run_job.sh args
 ```
 
 ## About jobs
