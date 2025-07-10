@@ -1,8 +1,7 @@
-version: '3.8'
-
 services:
   jobs:
     image: jobs
+    network_mode: "host"
     volumes:
       - /media/Library/SPE_Automated/:/logs
       - /media/Library/:/media/Library
