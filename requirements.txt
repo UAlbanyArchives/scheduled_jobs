@@ -1,2 +1,2 @@
 requests
-description_harvester>=0.4.2
+git+https://github.com/UAlbanyArchives/description_harvester.git@read_dao#egg=description_harvester
