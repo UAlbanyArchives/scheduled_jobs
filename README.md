@@ -62,7 +62,7 @@ This enables the SPE home page to present recently digitized items. It requests 
 These clean up working directories so stuff doesn't pile up over time and create a mess.
 
 ```
-0 1 * * * docker compose run --rm job ./scripts/cleanup.sh >> /media/Library/SPE_Automated/cleanup.log 2>&1
+0 1 * * * docker compose run --rm jobs ./scripts/cleanup.sh >> /media/Library/SPE_Automated/cleanup.log 2>&1
 ```
 
 ### Disk space tracking
@@ -70,7 +70,7 @@ These clean up working directories so stuff doesn't pile up over time and create
 This tracks disk space usage over time.
 
 ```
-0 1 * * * docker compose run --rm job ./scripts/track_disk_usage.sh >> /media/Library/SPE_Automated/DiskSpace/track_disk_usage.log 2>&1
+0 1 * * * docker compose run --rm jobs ./scripts/track_disk_usage.sh >> /media/Library/SPE_Automated/DiskSpace/track_disk_usage.log 2>&1
 ```
 
 ### SPE_DAO backup
@@ -78,5 +78,5 @@ This tracks disk space usage over time.
 This creates weekly backups and keeps one weekly snapshot and one monthly snapshot
 
 ```
-0 3 * * 1 docker compose run --rm job ./scripts/SPE_DAO-backup.sh >> /media/Library/SPE_Automated/backup_logs/SPE_DAO-backup.log 2>&1
+0 3 * * 1 docker compose run --rm jobs ./scripts/SPE_DAO-backup.sh >> /media/Library/SPE_Automated/backup_logs/SPE_DAO-backup.log 2>&1
 ```
