@@ -52,7 +52,13 @@ if r.status_code == 200:
             for key, solr_key in mapping.items():
                 if solr_key in dao:
                     value = dao[solr_key]
-                    obj[key] = value if isinstance(value, list) and "parent" in key else value[0]
+                    if isinstance(value, list):
+                        if "parent" in key:
+                            obj[key] = value
+                        else:
+                            obj[key] = value[0]
+                    else:
+                        obj[key] = value
             
             if "dado_date_uploaded_ssm" in dao:
                 obj["added"] = datetime.fromisoformat(dao["dado_date_uploaded_ssm"][0]).strftime("%B %d, %Y")
