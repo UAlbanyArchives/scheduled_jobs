@@ -1,4 +1,4 @@
-FROM python:3.11.2-slim-buster
+FROM python:3.11-slim-bookworm
 MAINTAINER Gregory Wiedeman gwiedeman@albany.edu
 
 ENV TZ=America/New_York
