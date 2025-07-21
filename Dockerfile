@@ -13,6 +13,6 @@ RUN chmod +x /app/scripts/track_disk_usage.sh
 RUN chmod +x /app/scripts/SPE_DAO-backup.sh
 
 RUN pip install --upgrade pip
-RUN pip install -r /app/requirements.txt
+RUN pip install -v -r /app/requirements.txt
 
 RUN git clone https://github.com/UAlbanyArchives/description_harvester_plugins.git
