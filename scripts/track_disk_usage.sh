@@ -22,13 +22,13 @@ for DISK in "${DISKS[@]}"; do
     MOUNT_PATH="/media/$DISK"
     OUTPUT_FILE="$OUT_DIR/${DISK}.tsv"
 
-    echo "Checking $MOUNT_PATH"
+    #echo "Checking $MOUNT_PATH"
 
     if mountpoint -q "$MOUNT_PATH"; then
         START=$(df -h "$MOUNT_PATH" | awk 'NR==2 {printf "%s\t%s\t%s\t%s\t%s", $1, $2, $3, $4, $5}')
         END=$(df "$MOUNT_PATH" --output=size,used,avail | awk 'NR==2 {printf "%s\t%s\t%s", $1, $2, $3}')
         echo -e "$DATE\t$START\t$END" >> "$OUTPUT_FILE"
-        echo "Logged disk usage to $OUTPUT_FILE"
+        #echo "Logged disk usage to $OUTPUT_FILE"
     else
         echo "Warning: $MOUNT_PATH is not mounted or does not exist" >&2
     fi
