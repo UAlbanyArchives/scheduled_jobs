@@ -15,4 +15,6 @@ RUN chmod +x /app/scripts/SPE_DAO-backup.sh
 RUN pip install --upgrade pip
 RUN pip install -v -r /app/requirements.txt
 
+RUN git config --global --add safe.directory /media/Library/SPE_Automated/collections
+
 RUN git clone https://github.com/UAlbanyArchives/description_harvester_plugins.git
