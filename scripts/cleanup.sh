@@ -8,8 +8,8 @@ echo "Cleanup started at $(date)"
 
 # Move files and folders older than 10 days to /expired
 echo "Moving /patron files and directories older than 10 days to /expired"
-find /media/Library/SPEwww/patron/ -mindepth 1 -mtime +10 ! -path "/media/Library/SPEwww/patron/expired/*" \
-  -exec mv {} /media/Library/SPEwww/patron/expired/ \;
+find /media/Library/SPEwww/patron/ -mindepth 1 -mtime +10 ! -path "/media/Library/SPEwww/patron/expired/*" -print0 |
+  xargs -0 -I{} mv "{}" /media/Library/SPEwww/patron/expired/
 
 # Remove files and folders in /expired older than 20 days
 echo "Removing /patron/expired files and directories older than 20 days"
