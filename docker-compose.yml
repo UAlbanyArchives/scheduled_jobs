@@ -8,6 +8,7 @@ services:
       - /media/Masters/:/media/Masters
       - ${HOME}/.archivessnake.yml:/root/.archivessnake.yml
       - ${HOME}/.description_harvester:/root/.description_harvester
+      - ./lastExport.txt:/opt/lastExport.txt
     working_dir: /app
     environment:
       - DESCRIPTION_HARVESTER_PLUGIN_DIR=/app/description_harvester_plugins

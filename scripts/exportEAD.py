@@ -21,7 +21,7 @@ print(f"{datetime.now()} Exporting Records from ArchivesSpace")
 client = ASnakeClient()
 
 lastExportTime = time.time()
-timePath = "lastExport.txt"
+timePath = "/opt/lastExport.txt"
 if os.path.isfile(timePath):
     with open(timePath, 'r') as timeFile:
         startTime = int(timeFile.read().replace('\n', ''))
