@@ -37,7 +37,7 @@ if os.name == "nt":
     ndpaListPath = r"\\Lincoln\Library\SPE_Processing\ndpaList.txt"
 else:
     output_path = "/media/Library/SPE_Automated/collections"
-    pdf_path = "/media/Library/SPEwww/browse/pdf"
+    pdf_path = "/media/Library/SPEwww/static/pdf"
     ndpaListPath = "/media/Library/SPE_Processing/ndpaList.txt"
 
 # Get list of NDPA IDs
