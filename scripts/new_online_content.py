@@ -4,6 +4,7 @@ import time
 import json
 import requests
 from datetime import datetime
+from dateutil.parser import parse
 
 if os.name == "nt":
     output_path = "new_online_content.json"
@@ -28,19 +29,35 @@ with open(config_path, 'r') as f:
 solr_core = config.get('solr_core')
 
 #query = "https://solr2020.library.albany.edu:8984/solr/hyrax/select?q=human_readable_type_sim:Dao&sort=system_create_dtsi+desc&rows=1000"
-query = f"https://solr2020.library.albany.edu:8984/solr/{solr_core}/select?fq=has_online_content_ssim%3A%22View%20only%20online%20content%22&sort=dado_date_uploaded_ssi%20desc&rows=1000"
-print (f"\tquerying {query}")
+query = f"https://solr2020.library.albany.edu:8984/solr/{solr_core}/select?fq=has_online_content_ssim%3A%22View%20only%20online%20content%22&sort=dado_date_uploaded_ssi%20desc&rows=10"
+#print (f"\tquerying {query}")
 r = requests.get(query)
-print (f"\t--> {r.status_code}")
+
 if r.status_code == 200:
+    docs = r.json()["response"]["docs"]
     collection_to_obj = {}
 
-    for dao in r.json()["response"]["docs"]:
-        collection_id = dao.get("_root_", [None])[0]
+    for dao in docs:
+        collection_id = dao.get("_root_")
+        if isinstance(collection_id, list):
+            collection_id = collection_id[0]
+
         if not collection_id:
             continue
 
-        if collection_id not in collection_to_obj:
+        current_added = dao.get("dado_date_uploaded_ssi")
+        if not current_added:
+            continue
+
+        try:
+            current_dt = parse(current_added)
+        except Exception as e:
+            print(f"Skipping invalid date: {current_added}")
+            continue
+
+        existing = collection_to_obj.get(collection_id)
+        if existing is None or current_dt > existing["_added_dt"]:
+            # Map fields
             mapping = {
                 "title": "title_tesim",
                 "collection_id": "_root_",
@@ -53,6 +70,7 @@ if r.status_code == 200:
                 "parent_ids": "parent_ssim",
                 "parents": "parent_unittitles_ssm"
             }
+
             obj = {}
             for key, solr_key in mapping.items():
                 if solr_key in dao:
@@ -64,30 +82,32 @@ if r.status_code == 200:
                             obj[key] = value[0]
                     else:
                         obj[key] = value
-            
-            if "dado_date_uploaded_ssm" in dao:
-                obj["added"] = datetime.fromisoformat(dao["dado_date_uploaded_ssm"][0]).strftime("%B %d, %Y")
-                obj["_added_raw"] = dao["dado_date_uploaded_ssm"][0]  # for sorting later
+
+            obj["added"] = current_dt.strftime("%B %d, %Y")
+            obj["_added_raw"] = current_added
+            obj["_added_dt"] = current_dt
 
             if obj.get("collecting_area") in collecting_area_map:
                 obj["collecting_area_code"] = collecting_area_map[obj["collecting_area"]]
+
 
             collection_to_obj[collection_id] = obj
 
     # Get most recent 3 across all unique collections
     latest_three = sorted(
         collection_to_obj.values(),
-        key=lambda x: x.get("_added_raw", ""),
+        key=lambda x: x["_added_dt"],
         reverse=True
     )[:3]
 
     # Remove internal sort field before output
     for item in latest_three:
         item.pop("_added_raw", None)
+        item.pop("_added_dt", None)
 
-    print(f"\tWriting results to {output_path}.")
     with open(output_path, "w") as output_file:
         json.dump(latest_three, output_file, indent=4)
-    ts = time.time()
-    timestamp = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    print (f"Finished at {timestamp}")
+
+    print(f"\tFinished at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+else:
+    print(f"Failed to fetch from Solr: {r.status_code}")
