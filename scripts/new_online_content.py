@@ -1,4 +1,5 @@
 import os
+import yaml
 import time
 import json
 import requests
@@ -21,9 +22,13 @@ collecting_area_map = {
     'University Archives': 'ua'
 }
 
-solr_core = "arclight-1.4_dao"
+config_path = '/root/.description_harvester/config.yml'
+with open(config_path, 'r') as f:
+    config = yaml.safe_load(f)
+solr_core = config.get('solr_core')
+
 #query = "https://solr2020.library.albany.edu:8984/solr/hyrax/select?q=human_readable_type_sim:Dao&sort=system_create_dtsi+desc&rows=1000"
-query = f"https://solr2020.library.albany.edu:8984/solr/{solr_core}/select?fq=has_online_content_ssim%3A%22View%20only%20online%20content%22&sort=dado_date_uploaded_ssm%20desc&rows=1000"
+query = f"https://solr2020.library.albany.edu:8984/solr/{solr_core}/select?fq=has_online_content_ssim%3A%22View%20only%20online%20content%22&sort=dado_date_uploaded_ssi%20desc&rows=1000"
 print (f"\tquerying {query}")
 r = requests.get(query)
 print (f"\t--> {r.status_code}")
