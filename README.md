@@ -4,6 +4,11 @@ Scheduled or overnight automated tasks
 ## Building
 
 ```
+make build
+```
+
+### Building on Windows
+```
 docker build -t jobs .
 ```
 
@@ -70,7 +75,7 @@ These clean up working directories so stuff doesn't pile up over time and create
 This tracks disk space usage over time.
 
 ```
-0 1 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs ./scripts/track_disk_usage.sh >> /media/Library/SPE_Automated/DiskSpace/track_disk_usage.log 2>&1
+0 1 * * 1 docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs ./scripts/track_disk_usage.sh >> /media/Library/SPE_Automated/DiskSpace/track_disk_usage.log 2>&1
 ```
 
 ### SPE_DAO backup
