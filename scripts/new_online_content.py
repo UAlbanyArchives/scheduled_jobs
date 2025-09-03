@@ -29,7 +29,7 @@ with open(config_path, 'r') as f:
 solr_core = config.get('solr_core')
 
 #query = "https://solr2020.library.albany.edu:8984/solr/hyrax/select?q=human_readable_type_sim:Dao&sort=system_create_dtsi+desc&rows=1000"
-query = f"https://solr2020.library.albany.edu:8984/solr/{solr_core}/select?fq=has_online_content_ssim%3A%22View%20only%20online%20content%22&sort=dado_date_uploaded_ssi%20desc&rows=10"
+query = f"https://solr2020.library.albany.edu:8984/solr/{solr_core}/select?fq=has_online_content_ssim%3A%22View%20only%20online%20content%22&sort=dado_date_uploaded_ssi%20desc&rows=50"
 #print (f"\tquerying {query}")
 r = requests.get(query)
 
