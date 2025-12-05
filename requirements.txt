@@ -1,2 +1,2 @@
 requests
-description_harvester==0.6.0
+description_harvester==0.7.1
