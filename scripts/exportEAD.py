@@ -99,3 +99,8 @@ if modifiedList:
         print("Push complete.")
     except RuntimeError as e:
         print(e)
+
+#print(f"\tWriting export time to {timePath}")
+with open(timePath, 'w') as timeFile:
+    timeFile.write(str(int(lastExportTime)))
+print(f"{datetime.now()} Export complete!")
