@@ -5,7 +5,7 @@ services:
     volumes:
       - /media/Library/SPE_Automated/:/logs
       - /media/Library/:/media/Library
-      - /media/Masters/:/media/Masters
+      - /media/Masters/:/media/Masters:ro
       - ${HOME}/.archivessnake.yml:/root/.archivessnake.yml
       - ${HOME}/.description_harvester:/root/.description_harvester
       - ${HOME}/.ssh:/root/.ssh
