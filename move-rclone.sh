@@ -13,10 +13,10 @@ docker compose -f ~/scheduled_jobs/docker-compose.yml run -d jobs rclone \
   --transfers 16 \
   --checkers 32 \
   --fast-list \
-  --log-file /opt/rclone/inital-$folder.log \
+  --log-file /logs/rclone/inital-$folder.log \
   --log-level INFO \
   --stats 30s \
   --retries 3 \
   --low-level-retries 10
 
-echo "Started rclone upload for $folder (logs: /opt/rclone/inital-$folder.log)"
+echo "Started rclone upload for $folder (logs: /logs/rclone/inital-$folder.log)"
