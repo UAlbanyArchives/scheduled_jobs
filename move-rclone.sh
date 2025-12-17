@@ -8,11 +8,11 @@ if [ -z "$folder" ]; then
 fi
 
 docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm -T jobs \
-  rclone copy "/media/Masters/Archives/AIP/$folder" "b2:$folder" \
+  rclone copy "/media/Masters/Archives/AIP/$folder" "b2:AIP-storage/$folder" \
   --transfers 16 \
   --checkers 32 \
   --fast-list \
-  --log-file "/logs/rclone-initial-$folder.log" \
+  --log-file "/logs/rclone/initial-$folder.log" \
   --log-level INFO \
   --stats 30s \
   --retries 3 \
