@@ -3,7 +3,7 @@ MAINTAINER Gregory Wiedeman gwiedeman@albany.edu
 
 ENV TZ=America/New_York
 
-RUN apt update && apt install -y rsync git curl
+RUN apt update && apt install -y rsync git curl rclone
 
 COPY . /app
 WORKDIR /app

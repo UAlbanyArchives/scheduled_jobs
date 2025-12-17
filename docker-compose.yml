@@ -10,6 +10,7 @@ services:
       - ${HOME}/.description_harvester:/root/.description_harvester
       - ${HOME}/.ssh:/root/.ssh
       - ./lastExport.txt:/opt/lastExport.txt
+      - ./rclone:/root/.config/rclone
     working_dir: /app
     environment:
       - DESCRIPTION_HARVESTER_PLUGIN_DIR=/app/description_harvester_plugins

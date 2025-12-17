@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+rclone/
+
 logs/
 out_data/
 lastExport.txt
