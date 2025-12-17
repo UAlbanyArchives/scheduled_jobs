@@ -8,7 +8,7 @@ if [ -z "$folder" ]; then
   exit 1
 fi
 
-docker compose -f ~/scheduled_jobs/docker-compose.yml run -d rclone \
+docker compose -f ~/scheduled_jobs/docker-compose.yml run -d jobs rclone \
   copy /media/Masters/Archives/AIP/$folder b2:/$folder \
   --transfers 16 \
   --checkers 32 \
