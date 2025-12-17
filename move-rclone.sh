@@ -9,7 +9,7 @@ if [ -z "$folder" ]; then
 fi
 
 docker compose -f ~/scheduled_jobs/docker-compose.yml run -d jobs rclone \
-  copy /media/Masters/Archives/AIP/$folder b2:/$folder \
+  copy /media/Masters/Archives/AIP/$folder b2:$folder \
   --transfers 16 \
   --checkers 32 \
   --fast-list \
@@ -19,4 +19,4 @@ docker compose -f ~/scheduled_jobs/docker-compose.yml run -d jobs rclone \
   --retries 3 \
   --low-level-retries 10
 
-echo "Started rclone upload for $folder (logs: /logs/rclone/inital-$folder.log)"
+echo "Started rclone upload for $folder (logs: SPE_Automated/rclone/inital-$folder.log)"

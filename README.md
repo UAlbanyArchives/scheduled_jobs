@@ -23,7 +23,7 @@ Schedule a script. `--rm` removes the Docker container after it runs.
 Adding `--rm` should clean containers after they are run, but if that isn't feasible because of `-d`, you have to clean containers with:
 ```
 docker compose -f ~/scheduled_jobs/docker-compose.yml ps -a
-docker compose -f ~/scheduled_jobs/docker-compose.yml rm -f
+docker ps -a --filter "name=scheduled_jobs-jobs-run" --filter "status=exited" -q | xargs -r docker rm
 ```
 
 ## About jobs
