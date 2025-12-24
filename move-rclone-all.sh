@@ -5,7 +5,7 @@ SOURCE_BASE="/media/Masters/Archives/AIP"
 DEST_BASE="b2:AIP-storage"
 LOG_BASE="/media/Library/SPE_Automated/rclone"
 COMPOSE_FILE="$HOME/scheduled_jobs/docker-compose.yml"
-MAX_JOBS=2  # Adjust concurrency based on your VM capacity
+MAX_JOBS=2
 
 mkdir -p "$LOG_BASE"
 
@@ -34,15 +34,11 @@ for dir in "$SOURCE_BASE"/*; do
   " &
 
   ((running_jobs++))
-
-  # throttle concurrency
   if (( running_jobs >= MAX_JOBS )); then
     wait -n
     ((running_jobs--))
   fi
-
 done
 
-# wait for remaining jobs
 wait
 echo "All uploads complete."
