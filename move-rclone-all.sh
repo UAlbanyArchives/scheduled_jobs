@@ -3,7 +3,7 @@ set -euo pipefail
 
 SOURCE_BASE="/media/Masters/Archives/AIP"
 DEST_BASE="b2:AIP-storage"
-LOG_BASE="/logs/rclone"
+LOG_BASE="/media/Library/SPE_Automated/rclone"
 
 COMPOSE_FILE="$HOME/scheduled_jobs/docker-compose.yml"
 
