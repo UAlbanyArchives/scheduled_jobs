@@ -6,8 +6,12 @@ DEST_BASE="b2:AIP-storage"
 LOG_BASE="/media/Library/SPE_Automated/rclone"
 COMPOSE_FILE="$HOME/scheduled_jobs/docker-compose.yml"
 MAX_JOBS=2
+MAIN_LOG="$LOG_BASE/main-$(date +%Y%m%d-%H%M%S).log"
 
 mkdir -p "$LOG_BASE"
+
+echo "Main log: $MAIN_LOG"
+echo "Started at $(date)" | tee -a "$MAIN_LOG"
 
 running_jobs=0
 
@@ -18,7 +22,7 @@ for dir in "$SOURCE_BASE"/*; do
   log_file="$LOG_BASE/initial-$folder.log"
   mkdir -p "$(dirname "$log_file")"
 
-  echo "Starting rclone upload for $folder"
+  echo "$(date): Starting rclone upload for $folder" | tee -a "$MAIN_LOG"
 
   # Start job in background safely
   (
@@ -47,4 +51,4 @@ done
 
 # Wait for any remaining jobs
 wait
-echo "All uploads complete."
+echo "$(date): All uploads complete." | tee -a "$MAIN_LOG"
