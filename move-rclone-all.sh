@@ -5,7 +5,6 @@ SOURCE_BASE="/media/Masters/Archives/AIP"
 DEST_BASE="b2:AIP-storage"
 LOG_BASE="/media/Library/SPE_Automated/rclone"
 COMPOSE_FILE="$HOME/scheduled_jobs/docker-compose.yml"
-
 MAX_JOBS=2  # Adjust concurrency based on your VM capacity
 
 mkdir -p "$LOG_BASE"
@@ -16,20 +15,8 @@ for dir in "$SOURCE_BASE"/*; do
   [ -d "$dir" ] || continue
   folder="$(basename "$dir")"
 
-  # ---- collection filtering ----
-  if [[ "$folder" =~ ^apap([0-9]{3})$ ]]; then
-    num="${BASH_REMATCH[1]}"
-    (( num >= 102 )) || continue
-    (( num != 301 )) || continue
-  elif [[ "$folder" =~ ^ua([0-9]{3})$ ]]; then
-    [[ "$folder" == "ua390" ]] && continue
-  elif [[ "$folder" =~ ^(ger|mss) ]]; then
-    :
-  else
-    continue
-  fi
-
-  log_file="/logs/rclone/initial-$folder.log"
+  log_file="$LOG_BASE/initial-$folder.log"
+  mkdir -p "$(dirname "$log_file")"
 
   echo "Starting rclone upload for $folder"
 
@@ -48,7 +35,7 @@ for dir in "$SOURCE_BASE"/*; do
 
   ((running_jobs++))
 
-  # Wait if we reach max concurrency
+  # throttle concurrency
   if (( running_jobs >= MAX_JOBS )); then
     wait -n
     ((running_jobs--))
@@ -56,7 +43,6 @@ for dir in "$SOURCE_BASE"/*; do
 
 done
 
-# Wait for any remaining jobs
+# wait for remaining jobs
 wait
-
 echo "All uploads complete."
