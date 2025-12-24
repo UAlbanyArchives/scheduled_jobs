@@ -11,34 +11,40 @@ mkdir -p "$LOG_BASE"
 
 running_jobs=0
 
+# Use a for loop to start jobs in order
 for dir in "$SOURCE_BASE"/*; do
   [ -d "$dir" ] || continue
   folder="$(basename "$dir")"
-
   log_file="$LOG_BASE/initial-$folder.log"
   mkdir -p "$(dirname "$log_file")"
 
   echo "Starting rclone upload for $folder"
 
-  docker compose -f "$COMPOSE_FILE" run --rm -T jobs bash -c "
-    rclone copy \"$dir\" \"$DEST_BASE/$folder\" \
-      --transfers 16 \
-      --checkers 32 \
-      --fast-list \
-      --log-file \"$log_file\" \
-      --log-level INFO \
-      --stats 30s \
-      --retries 3 \
-      --low-level-retries 10 \
-    && echo \"Done.\" >> \"$log_file\"
-  " &
+  # Start job in background safely
+  (
+    docker compose -f "$COMPOSE_FILE" run --rm -T jobs bash -c "
+      rclone copy \"$dir\" \"$DEST_BASE/$folder\" \
+        --transfers 16 \
+        --checkers 32 \
+        --fast-list \
+        --log-file \"$log_file\" \
+        --log-level INFO \
+        --stats 30s \
+        --retries 3 \
+        --low-level-retries 10 \
+      && echo \"Done.\" >> \"$log_file\"
+    "
+  ) &
 
   ((running_jobs++))
+
+  # Wait if we hit MAX_JOBS
   if (( running_jobs >= MAX_JOBS )); then
     wait -n
     ((running_jobs--))
   fi
 done
 
+# Wait for any remaining jobs
 wait
 echo "All uploads complete."
