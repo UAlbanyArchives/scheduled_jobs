@@ -148,7 +148,8 @@ for colID in modifiedList:
                 print(f"\t\t\tFailed to retrieve job log: {job_log.status_code}")
             elif job_log.text.count("\n") >= 2:
                 # try to just print the second line of the log for error details
-                print (f"\t\t\t{job_log.text.split('\n')[1]}")
+                error_line = job_log.text.split('\n')[1]
+                print(f"\t\t\t{error_line}")
             else:
                 # fall back to printing the whole log indented 3 tabs
                 indented_text = job_log.text.replace("\n", "\n\t\t\t")
