@@ -86,7 +86,74 @@ for colID in modifiedList:
 
     print("\t\t\tExporting PDF")
     pdfFile = os.path.join(pdf_path, f"{ID}.pdf")
-    export_file(client, f"repositories/2/resource_descriptions/{resourceID}.pdf", pdfFile, binary=True, params=params)
+    
+    # Create PDF generation job
+    job_params = {
+        "job": {
+            "source": f"/repositories/2/resources/{resourceID}",
+            "jsonmodel_type": "print_to_pdf_job",
+            "job_type": "print_to_pdf_job",
+            "include_unpublished": False,
+            "repo_id": 2
+        },
+        "job_params": "null",
+        "jsonmodel_type": "job"
+    }
+    
+    response = client.post("repositories/2/jobs", json=job_params)
+    if response.status_code != 200:
+        print(f"\t\t\tFailed to create PDF job: {response.json()}")
+        continue
+    
+    response_data = response.json()
+    job_id = response_data["id"]
+    print(f"\t\t\tPDF job created (ID: {job_id})")
+    
+    # Poll job status every 30 seconds
+    max_attempts = 40  # 20 minutes maximum
+    attempt = 0
+    while attempt < max_attempts:
+        time.sleep(30)
+        attempt += 1
+        
+        job = client.get(f"repositories/2/jobs/{job_id}")
+        if job.status_code != 200:
+            print(f"\t\t\tFailed to check job status: {job.status_code}")
+            break
+        
+        job_status = job.json()["status"]
+        print(f"\t\t\tJob status: {job_status}")
+        
+        if job_status == "completed":
+            # Get output files
+            output_files = client.get(f"repositories/2/jobs/{job_id}/output_files")
+            if output_files.status_code == 200:
+                file_id = output_files.json()[0]
+                
+                # Download PDF
+                file_response = client.get(f"repositories/2/jobs/{job_id}/output_files/{file_id}")
+                if file_response.status_code == 200:
+                    with open(pdfFile, 'wb', encoding=None) as f:
+                        f.write(file_response.content)
+                    print("\t\t\tSuccess!")
+                else:
+                    print(f"\t\t\tFailed to download PDF: {file_response.status_code}")
+            else:
+                print(f"\t\t\tFailed to get output files: {output_files.status_code}")
+            break
+        elif job_status == "failed":
+            print(f"\t\t\tPDF job failed")
+            job_log = client.get(f"repositories/2/jobs/{job_id}/log")
+            if job_log.status_code != 200:
+                print(f"\t\t\tFailed to retrieve job log: {job_log.status_code}")
+            elif job_log.text.count("\n") >= 2:
+                # try to just print the second line of the log for error details
+                print (f"\t\t\t{job_log.text.split('\n')[1]}")
+            else:
+                # fall back to printing the whole log indented 3 tabs
+                indented_text = job_log.text.replace("\n", "\n\t\t\t")
+                print(f"\t\t\t{indented_text}")
+            break
 
 if modifiedList:
     print(f"\tCommitting {len(modifiedList)} new EAD to collections repo...")
