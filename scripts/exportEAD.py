@@ -3,19 +3,13 @@ import time
 import subprocess
 from datetime import datetime, UTC
 from asnake.client import ASnakeClient
+from lxml import etree
 
 def run_git_command(command, cwd):
     result = subprocess.run(command, cwd=cwd, capture_output=True, text=True)
     if result.returncode != 0:
         raise RuntimeError(f"Git command failed: {' '.join(command)}\n{result.stderr}")
     return result.stdout.strip()
-
-def export_file(client, endpoint, filepath, binary=False, params=None):
-    response = client.get(endpoint, params=params)
-    mode = 'wb' if binary else 'w'
-    with open(filepath, mode, encoding=None if binary else 'utf-8') as f:
-        f.write(response.content if binary else response.text)
-    print("\t\t\tSuccess!")
 
 print(f"{datetime.now()} Exporting Records from ArchivesSpace")
 client = ASnakeClient()
@@ -82,9 +76,22 @@ for colID in modifiedList:
 
     print("\t\t\tExporting EAD")
     eadFile = os.path.join(eadDir, f"{ID}.xml")
-    export_file(client, f"repositories/2/resource_descriptions/{resourceID}.xml", eadFile, params=params)
+    
+    # Export and format EAD XML
+    response = client.get(f"repositories/2/resource_descriptions/{resourceID}.xml", params=params)
+    try:
+        parser = etree.XMLParser(remove_blank_text=True)
+        tree = etree.fromstring(response.content, parser)
+        with open(eadFile, 'wb') as f:
+            f.write(etree.tostring(tree, pretty_print=True, xml_declaration=True, encoding='utf-8'))
+        print("\t\t\tSuccess!")
+    except Exception as e:
+        # Fallback to raw XML if formatting fails
+        with open(eadFile, 'w', encoding='utf-8') as f:
+            f.write(response.text)
+        print(f"\t\t\tSuccess! (Warning: Could not format XML: {e})")
 
-    print("\t\t\tExporting PDF")
+    # Get PDF output file path
     pdfFile = os.path.join(pdf_path, f"{ID}.pdf")
     
     # Create PDF generation job
