@@ -17,7 +17,7 @@ docker build -t jobs .
 Schedule a script. `--rm` removes the Docker container after it runs.
 
 ```
-0 2 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs ./scripts/run_job.sh args
+0 2 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs scripts/run_job.sh args
 ```
 
 Adding `--rm` should clean containers after they are run, but if that isn't feasible because of `-d`, you have to clean containers with:
@@ -33,7 +33,7 @@ docker ps -a --filter "name=scheduled_jobs-jobs-run" --filter "status=exited" -q
 This nightly script copies all packages processed that day to B2.
 
 ```
-1 12 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs ./scripts/aip-staging.sh >> /media/Library/SPE_Automated/aip-staging.log 2>&1
+1 12 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs scripts/aip-staging.sh >> /media/Library/SPE_Automated/aip-staging.log 2>&1
 ```
 
 ### image_a_day
@@ -41,7 +41,7 @@ This nightly script copies all packages processed that day to B2.
 This downloads the Bing background image each day and uses it as the Find-It background. Both for fun and as proof that things are working as expected since its very visible.
 
 ```
-0 2 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs python ./scripts/image_a_day.py >> /media/Library/SPE_Automated/indexing-logs/image_a_day.log 2>&1
+0 2 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs python scripts/image_a_day.py >> /media/Library/SPE_Automated/indexing-logs/image_a_day.log 2>&1
 ```
 ### ArcLight index
 
@@ -65,7 +65,7 @@ For this to run, the host user needs to have permissions for `/media/Library/SPE
 (https://github.com/UAlbanyRobot) git credentials need to be set.
 
 ```
-0 1 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs python ./scripts/exportEAD.py >> /media/Library/SPE_Automated/indexing-logs/export.log 2>&1
+0 1 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs python scripts/exportEAD.py >> /media/Library/SPE_Automated/indexing-logs/export.log 2>&1
 ```
 
 ### New Online Content
@@ -73,7 +73,7 @@ For this to run, the host user needs to have permissions for `/media/Library/SPE
 This enables the SPE home page to present recently digitized items. It requests data from Solr and writes it to a new_online_content.json thats served publically. The website uses some .js to then populate this data in the page.
 
 ```
-0 3 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs python ./scripts/new_online_content.py >> /media/Library/SPE_Automated/new_online_content/new_online_content.log 2>&1
+0 3 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs python scripts/new_online_content.py >> /media/Library/SPE_Automated/new_online_content/new_online_content.log 2>&1
 ```
 
 ### Clean up commands
@@ -81,7 +81,7 @@ This enables the SPE home page to present recently digitized items. It requests 
 These clean up working directories so stuff doesn't pile up over time and create a mess.
 
 ```
-0 1 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs ./scripts/cleanup.sh >> /media/Library/SPE_Automated/cleanup.log 2>&1
+0 1 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs scripts/cleanup.sh >> /media/Library/SPE_Automated/cleanup.log 2>&1
 ```
 
 ### Disk space tracking
@@ -89,7 +89,7 @@ These clean up working directories so stuff doesn't pile up over time and create
 This tracks disk space usage over time.
 
 ```
-0 1 * * 1 docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs ./scripts/track_disk_usage.sh >> /media/Library/SPE_Automated/DiskSpace/track_disk_usage.log 2>&1
+0 1 * * 1 docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs scripts/track_disk_usage.sh >> /media/Library/SPE_Automated/DiskSpace/track_disk_usage.log 2>&1
 ```
 
 ### SPE_DAO backup
@@ -97,5 +97,5 @@ This tracks disk space usage over time.
 This creates monthly backups and keeps two monthly backups
 
 ```
-0 3 15 * * docker compose -f ~/scheduled_jobs/docker-compose-writable.yml run --rm jobs ./scripts/SPE_DAO-backup.sh >> /media/Library/SPE_Automated/backup_logs/SPE_DAO-backup.log 2>&1
+0 3 15 * * docker compose -f ~/scheduled_jobs/docker-compose-writable.yml run --rm jobs scripts/SPE_DAO-backup.sh >> /media/Library/SPE_Automated/backup_logs/SPE_DAO-backup.log 2>&1
 ```
