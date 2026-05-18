@@ -5,6 +5,7 @@ SOURCE_BASE="/media/Masters/Archives/AIP"
 DEST_BASE="b2:AIP-storage"
 COMPOSE_FILE="$HOME/scheduled_jobs/docker-compose.yml"
 HOST_LOG_DIR="/media/Library/SPE_Automated/rclone"
+CONTAINER_LOG_DIR="/logs/rclone"
 PID_FILE="$HOST_LOG_DIR/move-rclone-safe.pid"
 
 folder="${1:-}"
@@ -33,6 +34,16 @@ mkdir -p "$HOST_LOG_DIR"
 
 run_log="$HOST_LOG_DIR/catchup-${log_tag}-${stamp}.log"
 launcher_log="$HOST_LOG_DIR/catchup-${log_tag}-${stamp}-launcher.log"
+container_run_log="$CONTAINER_LOG_DIR/catchup-${log_tag}-${stamp}.log"
+
+{
+  echo "Launcher started at $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "Source: $src"
+  echo "Destination: $dest"
+  echo "Compose file: $COMPOSE_FILE"
+  echo "Host log: $run_log"
+  echo "Container log: $container_run_log"
+} >> "$launcher_log"
 
 nohup bash -lc "
   set -euo pipefail
@@ -46,7 +57,7 @@ nohup bash -lc "
       --bwlimit 40M \
       --tpslimit 10 \
       --fast-list \
-      --log-file '$run_log' \
+      --log-file '$container_run_log' \
       --log-level INFO \
       --stats 30s \
       --retries 3 \
@@ -55,7 +66,7 @@ nohup bash -lc "
   echo \"Finished at \\$(date '+%Y-%m-%d %H:%M:%S') with exit code \\$rc\" >> '$launcher_log'
   rm -f '$PID_FILE'
   exit \\$rc
-" >/dev/null 2>&1 &
+    " >> "$launcher_log" 2>&1 &
 
 new_pid=$!
 echo "$new_pid" > "$PID_FILE"
