@@ -47,7 +47,7 @@ container_run_log="$CONTAINER_LOG_DIR/catchup-${log_tag}-${stamp}.log"
 
 nohup bash -lc "
   set -euo pipefail
-  echo \"Started at \\$(date '+%Y-%m-%d %H:%M:%S')\" >> '$launcher_log'
+  echo \"Started at \$(date '+%Y-%m-%d %H:%M:%S')\" >> '$launcher_log'
   nice -n 10 ionice -c2 -n7 \
     docker compose -f '$COMPOSE_FILE' run --rm -T jobs \
       rclone copy '$src' '$dest' \
@@ -62,10 +62,10 @@ nohup bash -lc "
       --stats 30s \
       --retries 3 \
       --low-level-retries 10
-  rc=\\$?
-  echo \"Finished at \\$(date '+%Y-%m-%d %H:%M:%S') with exit code \\$rc\" >> '$launcher_log'
+  rc=\$?
+  echo \"Finished at \$(date '+%Y-%m-%d %H:%M:%S') with exit code \$rc\" >> '$launcher_log'
   rm -f '$PID_FILE'
-  exit \\$rc
+  exit \$rc
     " >> "$launcher_log" 2>&1 &
 
 new_pid=$!
