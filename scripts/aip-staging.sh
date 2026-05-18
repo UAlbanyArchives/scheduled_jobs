@@ -32,8 +32,8 @@ for collection in "$STAGING_ROOT"/*; do
     echo "  Processing $col_id/$pkg_id"
     echo "    Started at $(date '+%Y-%m-%d %H:%M:%S')"
 
-    # If package already exists in B2, skip and DO NOT delete locally
-    if rclone lsd "$DEST" >/dev/null 2>&1; then
+    # Check whether pkg_id exists as a directory directly under the collection.
+    if rclone lsf "$B2_ROOT/$col_id" --dirs-only --max-depth 1 | grep -Fxq "$pkg_id/"; then
       echo "    Package already exists in B2 — skipping (local copy retained)"
       continue
     fi
