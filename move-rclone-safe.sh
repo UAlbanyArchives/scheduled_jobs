@@ -1,25 +1,67 @@
 #!/bin/bash
+set -euo pipefail
 
-folder=$1
+SOURCE_BASE="/media/Masters/Archives/AIP"
+DEST_BASE="b2:AIP-storage"
+COMPOSE_FILE="$HOME/scheduled_jobs/docker-compose.yml"
+HOST_LOG_DIR="/media/Library/SPE_Automated/rclone"
+PID_FILE="$HOST_LOG_DIR/move-rclone-safe.pid"
 
-if [ -z "$folder" ]; then
-  echo "Usage: move-rclone <folder>"
-  exit 1
+folder="${1:-}"
+stamp="$(date +%Y%m%d-%H%M%S)"
+
+if [ -n "$folder" ]; then
+  src="$SOURCE_BASE/$folder"
+  dest="$DEST_BASE/$folder"
+  log_tag="$folder"
+else
+  src="$SOURCE_BASE"
+  dest="$DEST_BASE"
+  log_tag="all"
 fi
 
-nice -n 10 ionice -c2 -n7 \
-docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm -T jobs \
-  rclone copy "/media/Masters/Archives/AIP/$folder" "b2:AIP-storage/$folder" \
-  --ignore-existing \
-  --transfers 4 \
-  --checkers 8 \
-  --bwlimit 40M \
-  --tpslimit 10 \
-  --fast-list \
-  --log-file "/logs/rclone/catchup-$folder.log" \
-  --log-level INFO \
-  --stats 30s \
-  --retries 3 \
-  --low-level-retries 10 &
+if [ -f "$PID_FILE" ]; then
+  old_pid="$(cat "$PID_FILE" 2>/dev/null || true)"
+  if [ -n "$old_pid" ] && kill -0 "$old_pid" 2>/dev/null; then
+    echo "An upload is already running with PID $old_pid."
+    echo "If that process is stale, remove $PID_FILE and retry."
+    exit 1
+  fi
+fi
 
-echo "Started rclone upload for $folder (logs: SPE_Automated/rclone/catchup-$folder.log)"
+mkdir -p "$HOST_LOG_DIR"
+
+run_log="$HOST_LOG_DIR/catchup-${log_tag}-${stamp}.log"
+launcher_log="$HOST_LOG_DIR/catchup-${log_tag}-${stamp}-launcher.log"
+
+nohup bash -lc "
+  set -euo pipefail
+  echo \"Started at \\$(date '+%Y-%m-%d %H:%M:%S')\" >> '$launcher_log'
+  nice -n 10 ionice -c2 -n7 \
+    docker compose -f '$COMPOSE_FILE' run --rm -T jobs \
+      rclone copy '$src' '$dest' \
+      --ignore-existing \
+      --transfers 4 \
+      --checkers 8 \
+      --bwlimit 40M \
+      --tpslimit 10 \
+      --fast-list \
+      --log-file '$run_log' \
+      --log-level INFO \
+      --stats 30s \
+      --retries 3 \
+      --low-level-retries 10
+  rc=\\$?
+  echo \"Finished at \\$(date '+%Y-%m-%d %H:%M:%S') with exit code \\$rc\" >> '$launcher_log'
+  rm -f '$PID_FILE'
+  exit \\$rc
+" >/dev/null 2>&1 &
+
+new_pid=$!
+echo "$new_pid" > "$PID_FILE"
+
+echo "Started background rclone catchup with PID $new_pid"
+echo "Source: $src"
+echo "Destination: $dest"
+echo "Rclone log: $run_log"
+echo "Launcher log: $launcher_log"
