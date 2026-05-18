@@ -39,13 +39,22 @@ for collection in "$STAGING_ROOT"/*; do
     fi
 
     # Copy (polite/background characteristics are already in flags)
-    rclone copy "$SRC" "$DEST" "${RCLONE_FLAGS[@]}"
+    if ! rclone copy "$SRC" "$DEST" "${RCLONE_FLAGS[@]}"; then
+      echo "    ERROR: Copy failed for $col_id/$pkg_id; retaining local package and continuing"
+      continue
+    fi
 
     # Verify before delete
-    rclone check "$SRC" "$DEST" --checksum
+    if ! rclone check "$SRC" "$DEST" --checksum; then
+      echo "    ERROR: Verification failed for $col_id/$pkg_id; retaining local package and continuing"
+      continue
+    fi
 
     echo "    Verified upload; removing local package"
-    rm -rf "$SRC"
+    if ! rm -rf "$SRC"; then
+      echo "    ERROR: Could not remove local package $SRC; continuing to next package"
+      continue
+    fi
 
     echo "    Finished at $(date '+%Y-%m-%d %H:%M:%S')"
   done
@@ -53,7 +62,9 @@ for collection in "$STAGING_ROOT"/*; do
   # Remove empty collection directories
   if [ -d "$collection" ] && [ -z "$(ls -A "$collection")" ]; then
     echo "  Removing empty collection directory $collection"
-    rmdir "$collection"
+    if ! rmdir "$collection"; then
+      echo "  WARNING: Could not remove collection directory $collection"
+    fi
   fi
 done
 

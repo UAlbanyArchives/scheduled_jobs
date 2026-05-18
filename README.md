@@ -33,7 +33,7 @@ docker ps -a --filter "name=scheduled_jobs-jobs-run" --filter "status=exited" -q
 This nightly script copies all packages processed that day to B2.
 
 ```
-1 12 * * * docker compose -f ~/scheduled_jobs/docker-compose.yml run --rm jobs scripts/aip-staging.sh >> /media/Library/SPE_Automated/aip-staging.log 2>&1
+1 12 * * * docker compose -f ~/scheduled_jobs/docker-compose-staging.yml run --rm jobs scripts/aip-staging.sh >> /media/Library/SPE_Automated/aip-staging.log 2>&1
 ```
 
 ### image_a_day
