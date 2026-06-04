@@ -12,6 +12,7 @@ RUN chmod +x /app/scripts/cleanup.sh
 RUN chmod +x /app/scripts/track_disk_usage.sh
 RUN chmod +x /app/scripts/SPE_DAO-backup.sh
 RUN chmod +x /app/scripts/aip-staging.sh
+RUN chmod +x /app/scripts/aip-verify.sh
 
 RUN pip install --upgrade pip
 RUN pip install -v -r /app/requirements.txt

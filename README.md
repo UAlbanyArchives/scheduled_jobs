@@ -97,5 +97,13 @@ This tracks disk space usage over time.
 This creates monthly backups in b2 and keeps two monthly backups
 
 ```
-0 3 15 * * docker compose -f ~/scheduled_jobs/docker-compose-staging.yml run --rm jobs scripts/SPE_DAO-backup.sh >> /media/Library/SPE_Automated/backup_logs/SPE_DAO-backup.log 2>&1
+0 18 * * 5 docker compose -f ~/scheduled_jobs/docker-compose-staging.yml run --rm jobs scripts/SPE_DAO-backup.sh >> /media/Library/SPE_Automated/backup_logs/SPE_DAO-backup.log 2>&1
+```
+
+### Backup verifier
+
+This reports if any local AIPs are not present in b2. `VERIFY_MODE=size` iss much faster, without this it uses checksums to validate.
+
+```
+0 1 7 * * VERIFY_MODE=size docker compose -f ~/scheduled_jobs/docker-compose-staging.yml run --rm jobs aip-verify.sh >> /media/Library/SPE_Automated/aip-verify.log 2>&1
 ```
