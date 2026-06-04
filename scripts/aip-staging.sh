@@ -3,10 +3,23 @@ set -euo pipefail
 
 STAGING_ROOT="/media/Masters/Archives/AIP_staging"
 B2_ROOT="b2:AIP-storage"
+RCLONE_CONFIG_FILE="${RCLONE_CONFIG_FILE:-/root/.config/rclone/rclone.conf}"
+
+if [ ! -f "$RCLONE_CONFIG_FILE" ]; then
+  echo "ERROR: rclone config not found at $RCLONE_CONFIG_FILE"
+  echo "Set RCLONE_CONFIG_FILE or mount ./rclone to /root/.config/rclone in docker-compose-staging.yml"
+  exit 1
+fi
+
+if ! rclone listremotes --config "$RCLONE_CONFIG_FILE" | grep -Fxq "b2:"; then
+  echo "ERROR: remote 'b2' not found in $RCLONE_CONFIG_FILE"
+  exit 1
+fi
 
 echo "AIP staging upload started at $(date '+%Y-%m-%d %H:%M:%S')"
 
 RCLONE_FLAGS=(
+  --config "$RCLONE_CONFIG_FILE"
   --transfers 4
   --checkers 8
   --bwlimit 40M

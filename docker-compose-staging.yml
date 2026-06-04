@@ -7,5 +7,6 @@ services:
       - /media/Library/:/media/Library
       - /media/Masters/:/media/Masters:ro
       - /media/Masters/Archives/AIP_staging:/media/Masters/Archives/AIP_staging
+      - ./rclone:/root/.config/rclone
     working_dir: /app
     entrypoint: ""
