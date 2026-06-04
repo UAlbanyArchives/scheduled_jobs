@@ -1,10 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-LOGFILE="/var/log/SPE_DAO-backup.log"
-mkdir -p "$(dirname "$LOGFILE")"
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+}
 
-echo "SPE_DAO backup started at $(date)" >> "$LOGFILE"
+log "SPE_DAO backup started"
 
 SRC="/media/Library/SPE_DAO/"
 DEST="/media/Masters/Archives/SPE_DAO-backup"
@@ -17,16 +18,16 @@ mkdir -p "$NEW_BACKUP"
 rsync -a --delete "$SRC" "$NEW_BACKUP"
 
 # --- Cleanup: keep only the 2 newest backups ---
-BACKUPS=( $(ls -1d "$DEST"/backup-* 2>/dev/null | sort -r) )
+mapfile -t BACKUPS < <(find "$DEST" -maxdepth 1 -mindepth 1 -type d -name 'backup-*' | sort -r)
 
 COUNT=${#BACKUPS[@]}
 
 if [ $COUNT -gt 2 ]; then
     for i in $(seq 3 $COUNT); do
         OLD=${BACKUPS[$((i-1))]}
-        echo "Removing old backup $OLD..." | tee -a "$LOGFILE"
+        log "Removing old backup $OLD"
         rm -rf "$OLD"
     done
 fi
 
-echo "SPE_DAO backup finished at $(date)" >> "$LOGFILE"
+log "SPE_DAO backup finished"
