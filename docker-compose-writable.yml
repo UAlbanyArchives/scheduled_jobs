@@ -6,5 +6,6 @@ services:
       - /media/Library/SPE_Automated/:/logs
       - /media/Library/:/media/Library
       - /media/Masters/:/media/Masters
+      - ./rclone:/root/.config/rclone
     working_dir: /app
     entrypoint: ""

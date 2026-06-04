@@ -94,8 +94,8 @@ This tracks disk space usage over time.
 
 ### SPE_DAO backup
 
-This creates monthly backups and keeps two monthly backups
+This creates monthly backups in b2 and keeps two monthly backups
 
 ```
-0 3 15 * * docker compose -f ~/scheduled_jobs/docker-compose-writable.yml run --rm jobs scripts/SPE_DAO-backup.sh >> /media/Library/SPE_Automated/backup_logs/SPE_DAO-backup.log 2>&1
+0 3 15 * * docker compose -f ~/scheduled_jobs/docker-compose-staging.yml run --rm jobs scripts/SPE_DAO-backup.sh >> /media/Library/SPE_Automated/backup_logs/SPE_DAO-backup.log 2>&1
 ```

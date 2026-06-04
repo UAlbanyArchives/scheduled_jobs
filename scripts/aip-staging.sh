@@ -28,7 +28,7 @@ RCLONE_FLAGS=(
   --stats 30s
   --retries 3
   --low-level-retries 10
-  --log-level INFO
+  --log-level NOTICE
 )
 
 for collection in "$STAGING_ROOT"/*; do
